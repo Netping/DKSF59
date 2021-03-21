@@ -28,6 +28,7 @@ build html_page.pbi : index html_page.xcl
 build httpserver-netconn.pbi : index httpserver-netconn.xcl
 build LOGS.pbi : index LOGS.xcl
 build main.pbi : index main.xcl
+build ping.pbi : index ping.xcl
 build snmp_ex.pbi : index snmp_ex.xcl
 build stm32f1xx_hal_msp.pbi : index stm32f1xx_hal_msp.xcl
 build stm32f1xx_hal_timebase_tim.pbi : index stm32f1xx_hal_timebase_tim.xcl
@@ -141,18 +142,19 @@ build udp.pbi : index udp.xcl
 build upap.pbi : index upap.xcl
 build utils.pbi : index utils.xcl
 build vj.pbi : index vj.xcl
-build pj4_part0.pbi : link base64.pbi crc16.pbi flash_if.pbi freertos.pbi html_page.pbi httpserver-netconn.pbi LOGS.pbi main.pbi snmp_ex.pbi stm32f1xx_hal_msp.pbi stm32f1xx_hal_timebase_tim.pbi
-build pj4_part1.pbi : link stm32f1xx_it.pbi udpecho.pbi lwip.pbi ethernetif.pbi system_stm32f1xx.pbi stm32f1xx_hal.pbi stm32f1xx_hal_cortex.pbi stm32f1xx_hal_dma.pbi stm32f1xx_hal_eth.pbi stm32f1xx_hal_exti.pbi stm32f1xx_hal_flash.pbi
-build pj4_part2.pbi : link stm32f1xx_hal_flash_ex.pbi stm32f1xx_hal_gpio.pbi stm32f1xx_hal_gpio_ex.pbi stm32f1xx_hal_pwr.pbi stm32f1xx_hal_rcc.pbi stm32f1xx_hal_rcc_ex.pbi stm32f1xx_hal_rtc.pbi stm32f1xx_hal_rtc_ex.pbi stm32f1xx_hal_tim.pbi stm32f1xx_hal_tim_ex.pbi cmsis_os.pbi
-build pj4_part3.pbi : link croutine.pbi event_groups.pbi heap_5.pbi list.pbi port.pbi queue.pbi stream_buffer.pbi tasks.pbi timers.pbi api_lib.pbi api_msg.pbi
-build pj4_part4.pbi : link auth.pbi autoip.pbi ccp.pbi chap-md5.pbi chap-new.pbi chap_ms.pbi def.pbi demand.pbi dhcp.pbi dhcp6.pbi dns.pbi
-build pj4_part5.pbi : link eap.pbi ecp.pbi err.pbi etharp.pbi ethernet.pbi ethip6.pbi eui64.pbi fs.pbi fsm.pbi httpd.pbi icmp.pbi
-build pj4_part6.pbi : link icmp6.pbi igmp.pbi inet6.pbi inet_chksum.pbi init.pbi ip.pbi ip4.pbi ip4_addr.pbi ip4_frag.pbi ipcp.pbi lcp.pbi
-build pj4_part7.pbi : link magic.pbi mem.pbi memp.pbi mld6.pbi mppe.pbi multilink.pbi nd6.pbi netbuf.pbi netdb.pbi netif.pbi netifapi.pbi
-build pj4_part8.pbi : link pbuf.pbi ppp.pbi pppapi.pbi pppcrypt.pbi pppoe.pbi pppol2tp.pbi pppos.pbi raw.pbi slipif.pbi snmp_asn1.pbi snmp_core.pbi
-build pj4_part9.pbi : link snmp_mib2.pbi snmp_mib2_system.pbi snmp_msg.pbi snmp_netconn.pbi snmp_pbuf_stream.pbi snmp_scalar.pbi snmp_table.pbi snmp_threadsync.pbi snmp_traps.pbi sockets.pbi stats.pbi
-build pj4_part10.pbi : link sys.pbi sys_arch.pbi tcp.pbi tcp_in.pbi tcp_out.pbi tcpip.pbi timeouts.pbi udp.pbi upap.pbi utils.pbi vj.pbi
-build pj4.pbd : link pj4_part0.pbi pj4_part1.pbi pj4_part2.pbi pj4_part3.pbi pj4_part4.pbi pj4_part5.pbi pj4_part6.pbi pj4_part7.pbi pj4_part8.pbi pj4_part9.pbi pj4_part10.pbi
+build pj4_part0.pbi : link base64.pbi crc16.pbi flash_if.pbi freertos.pbi html_page.pbi httpserver-netconn.pbi LOGS.pbi main.pbi ping.pbi snmp_ex.pbi stm32f1xx_hal_msp.pbi
+build pj4_part1.pbi : link stm32f1xx_hal_timebase_tim.pbi stm32f1xx_it.pbi udpecho.pbi lwip.pbi ethernetif.pbi system_stm32f1xx.pbi stm32f1xx_hal.pbi stm32f1xx_hal_cortex.pbi stm32f1xx_hal_dma.pbi stm32f1xx_hal_eth.pbi stm32f1xx_hal_exti.pbi
+build pj4_part2.pbi : link stm32f1xx_hal_flash.pbi stm32f1xx_hal_flash_ex.pbi stm32f1xx_hal_gpio.pbi stm32f1xx_hal_gpio_ex.pbi stm32f1xx_hal_pwr.pbi stm32f1xx_hal_rcc.pbi stm32f1xx_hal_rcc_ex.pbi stm32f1xx_hal_rtc.pbi stm32f1xx_hal_rtc_ex.pbi stm32f1xx_hal_tim.pbi stm32f1xx_hal_tim_ex.pbi
+build pj4_part3.pbi : link cmsis_os.pbi croutine.pbi event_groups.pbi heap_5.pbi list.pbi port.pbi queue.pbi stream_buffer.pbi tasks.pbi timers.pbi api_lib.pbi
+build pj4_part4.pbi : link api_msg.pbi auth.pbi autoip.pbi ccp.pbi chap-md5.pbi chap-new.pbi chap_ms.pbi def.pbi demand.pbi dhcp.pbi dhcp6.pbi
+build pj4_part5.pbi : link dns.pbi eap.pbi ecp.pbi err.pbi etharp.pbi ethernet.pbi ethip6.pbi eui64.pbi fs.pbi fsm.pbi httpd.pbi
+build pj4_part6.pbi : link icmp.pbi icmp6.pbi igmp.pbi inet6.pbi inet_chksum.pbi init.pbi ip.pbi ip4.pbi ip4_addr.pbi ip4_frag.pbi ipcp.pbi
+build pj4_part7.pbi : link lcp.pbi magic.pbi mem.pbi memp.pbi mld6.pbi mppe.pbi multilink.pbi nd6.pbi netbuf.pbi netdb.pbi netif.pbi
+build pj4_part8.pbi : link netifapi.pbi pbuf.pbi ppp.pbi pppapi.pbi pppcrypt.pbi pppoe.pbi pppol2tp.pbi pppos.pbi raw.pbi slipif.pbi snmp_asn1.pbi
+build pj4_part9.pbi : link snmp_core.pbi snmp_mib2.pbi snmp_mib2_system.pbi snmp_msg.pbi snmp_netconn.pbi snmp_pbuf_stream.pbi snmp_scalar.pbi snmp_table.pbi snmp_threadsync.pbi snmp_traps.pbi sockets.pbi
+build pj4_part10.pbi : link stats.pbi sys.pbi sys_arch.pbi tcp.pbi tcp_in.pbi tcp_out.pbi tcpip.pbi timeouts.pbi udp.pbi upap.pbi utils.pbi
+build pj4_part11.pbi : link vj.pbi
+build pj4.pbd : link pj4_part0.pbi pj4_part1.pbi pj4_part2.pbi pj4_part3.pbi pj4_part4.pbi pj4_part5.pbi pj4_part6.pbi pj4_part7.pbi pj4_part8.pbi pj4_part9.pbi pj4_part10.pbi pj4_part11.pbi
 build pj4.pbw : browsedata pj4.pbd
 
 

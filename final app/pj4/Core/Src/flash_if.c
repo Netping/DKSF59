@@ -303,7 +303,7 @@ void jamp_to_app (void)
   uint32_t addr_met =APPLICATION_ADDRESS;
   uint32_t data_met;
   data_met= (uint32_t)(*(uint32_t*)addr_met);
-  
+  __disable_irq ();
   GPIO_InitTypeDef GPIO_InitStruct = {0};
  if ((data_met!=0xFFFFFFFF)&&(data_met!=0))
  {
@@ -447,7 +447,7 @@ uint8_t save_data_blok (uint8_t N_sector,uint32_t* struct_to)
      FW_data.V_IP_CONFIG[0]=192;
      FW_data.V_IP_CONFIG[1]=168;
      FW_data.V_IP_CONFIG[2]=0;
-     FW_data.V_IP_CONFIG[3]=10;
+     FW_data.V_IP_CONFIG[3]=21;
      
      FW_data.V_IP_MASK[0]=255;
      FW_data.V_IP_MASK[1]=255;
@@ -543,6 +543,35 @@ uint8_t save_data_blok (uint8_t N_sector,uint32_t* struct_to)
      FW_data.V_CRC_BOOT=crc16_ccitt((uint8_t*)&(FW_data.V_IP_CONFIG[0]),24);     
      FW_data.V_logs_struct.CRC16 = crc16_ccitt((uint8_t*)&(FW_data.V_logs_struct.log_reple[0]),2000);
      FW_data.V_CRC_DATA=crc16_ccitt((uint8_t*)&(FW_data.V_DHCP),2018);
+     
+       FW_data.V_TYPE_LOGIC=0;
+       FW_data.V_EN_WATCHDOG=0;
+       FW_data.V_EN_WATCHDOG_CN_A=1;
+       FW_data.V_EN_WATCHDOG_CN_B=1;
+       FW_data.V_EN_WATCHDOG_CN_C=1;
+       FW_data.V_IP_WDT_ADDR_CN_A[0]=192;
+       FW_data.V_IP_WDT_ADDR_CN_A[1]=168;
+       FW_data.V_IP_WDT_ADDR_CN_A[2]=0;
+       FW_data.V_IP_WDT_ADDR_CN_A[3]=151;
+      
+       FW_data.V_IP_WDT_ADDR_CN_B[0]=192;
+       FW_data.V_IP_WDT_ADDR_CN_B[1]=168;
+       FW_data.V_IP_WDT_ADDR_CN_B[2]=0;
+       FW_data.V_IP_WDT_ADDR_CN_B[3]=152;
+      
+       FW_data.V_IP_WDT_ADDR_CN_C[0]=192;
+       FW_data.V_IP_WDT_ADDR_CN_C[1]=168;
+       FW_data.V_IP_WDT_ADDR_CN_C[2]=0;
+       FW_data.V_IP_WDT_ADDR_CN_C[3]=153;
+       FW_data.V_CT_RES_ALLSTART=0;
+       FW_data.V_T_SEND_PING=15;
+       FW_data.V_TIME_RESEND_PING=1000;
+       FW_data.V_MAX_REPID_PING=8;
+       FW_data.V_TIME_RESET_PULSE=12;
+       FW_data.V_PAUSE_RESET_TO_REPID=15;
+       FW_data.V_MAX_RESEND_PACET_RESET=0;
+     
+     
      
      save_data_blok(3,(uint32_t*)&FW_data.V_CRC_APP); 
      

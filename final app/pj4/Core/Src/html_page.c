@@ -9,7 +9,7 @@ uint8_t flag_logon=0;
 const char contact_data[]="http://www.netping.ru/";
 const char model_dev[]="UniPing port";
 char str2[512]={0};
-char str3[128]={0};
+char str3[512]={0};
 char str4[128]={0};
 unsigned char key_http[30]="asfasdvas";
 int key_http_len = 10;
@@ -224,43 +224,43 @@ void swich_mess_event (uint8_t event,char* mess)
 uint32_t costr_pass(char* str1)
 {
 uint32_t len_out;
-memset (str1,0, 5000);
+memset (str1,0, 200);
 memcpy(str1,(char*)(HTTP401),sizeof(HTTP401));
 strcat(str1,"Name_dev");
 strcat(str1,(char*)HTTP401end);
 len_out=strlen(str1);        
 return len_out;
 }
-uint8_t pass_compar(char* in_buf)
-{
-uint8_t ct_pass;
-uint8_t len_login,len_pass;
-char login_in[32] = {0};
-char pass_in[32]= {0};
-for(ct_pass=23;ct_pass<120;ct_pass++)
-  {
-    if (((char)(*(in_buf+ct_pass)))=='&')
-      {
-       len_login = ct_pass-23;
-      }
-    if (in_buf[ct_pass]==' ')
-      {
-        len_pass=ct_pass-23-len_login-10;
-        ct_pass=120;
-      }
-   
-  }
- 
-    memcpy(login_in,(char*)(in_buf+23),len_login);
-    memcpy(pass_in,(char*)(in_buf+23+len_login+10),len_pass);
-    if (len_pass==0)len_pass++;
-    if (len_login==0)len_login++;
-    if (((strncmp((char*)FW_data.V_LOGIN,(char*)login_in,len_login))==0)&&((strncmp((char*)FW_data.V_PASSWORD,(char*)pass_in,len_pass))==0))
-    {
-      return 1;
-    }
-return 0;
-}
+//uint8_t pass_compar(char* in_buf)
+//{
+//uint8_t ct_pass;
+//uint8_t len_login,len_pass;
+//char login_in[32] = {0};
+//char pass_in[32]= {0};
+//for(ct_pass=23;ct_pass<120;ct_pass++)
+//  {
+//    if (((char)(*(in_buf+ct_pass)))=='&')
+//      {
+//       len_login = ct_pass-23;
+//      }
+//    if (in_buf[ct_pass]==' ')
+//      {
+//        len_pass=ct_pass-23-len_login-10;
+//        ct_pass=120;
+//      }
+//   
+//  }
+// 
+//    memcpy(login_in,(char*)(in_buf+23),len_login);
+//    memcpy(pass_in,(char*)(in_buf+23+len_login+10),len_pass);
+//    if (len_pass==0)len_pass++;
+//    if (len_login==0)len_login++;
+//    if (((strncmp((char*)FW_data.V_LOGIN,(char*)login_in,len_login))==0)&&((strncmp((char*)FW_data.V_PASSWORD,(char*)pass_in,len_pass))==0))
+//    {
+//      return 1;
+//    }
+//return 0;
+//}
 
 
 
@@ -345,7 +345,13 @@ sprintf(str1,"<input name=\"%s\"  value=\"%s\" maxlength=\"%d\" >",name,dat,n);
 
 return 0;
 }
-
+uint16_t set_intnum (char* str1,char* name,uint8_t size,char* value,uint32_t min,uint32_t  max)
+{ 
+//<p><input type="number" size="3" name="num" min="1" max="10" value="1"></p>
+uint16_t len;
+sprintf(str1,"<input type=\"number\" name=\"%s\"  size='%d' min=\"%d\" max=\"%d\" value=\"%s\">&ensp;",name,size,min,max,value);
+return len;
+}
 //<input type="text"  placeholder=\"%s\" maxlength="число">
 
 ////  len=len+set_open_block(str2,"h4");
@@ -404,15 +410,40 @@ return 0;
 
 //<p style="text-align:center"><input name="Start_boot" required="required" type="checkbox" value="boot" />&ensp; <input type="submit" value="Start frimware update? Start bootloader " /></p>
 //<label><input type="checkbox" name="name"> messeg</label>
- uint16_t set_checkbox (char* str1,char* name,char* value,char* id)
+ uint16_t set_checkbox (char* str1,char* name,char* value,char* id,uint8_t ck)
 { 
-
+ // set_checkbox (str3,"V_EN_WATCHDOG","1","WDT",FW_data.V_EN_WATCHDOG);
 //<button type="button" name="Save_power" formtarget="_self" onclick="Save_Power()" >Save Power </button>	
-
-sprintf(str1,"<label><input type=\"checkbox\" name=\"%s\" form=\"%s\" value=\"%s\"> </label>",name,id,value);
+if (ck==0)
+{
+ 
+ //sprintf(str1,"<label><input type=\"checkbox\" required=\"required\"  name=\"%s\" form=\"%s\" value=\"%s\"> </label>",name,id,value);
+     sprintf(str1,"<input type=\"checkbox\"   name=\"%s\" id=\"%s\" value=\"%s\"> ",name,id,value);
+}
+else
+{
+//  input name=\"output_logic\" type=\"radio\" value=\"0\"checked
+//sprintf(str1,"<label><input type=\"checkbox\" required=\"required\"  name=\"%s\" form=\"%s\" value=\"%s\"  checked> </label>",name,id,value);
+  sprintf(str1,"<input type=\"checkbox\"  name=\"%s\"  id=\"%s\" value=\"%s\" checked> ",name,id,value);
+}
 
 return 0;
 }
+
+ uint16_t set_checkonoff (char* str1,char* name,uint8_t ck)
+ {  
+   if (ck==1)
+   {
+      sprintf(str1,"<p><select name=\"%s\"><option selected >ON</option><option>OFF</option></select></p>",name);
+   }
+   else
+   {
+   
+      sprintf(str1,"<p><select name=\"%s\"><option  >ON</option><option selected >OFF</option></select></p>",name);
+   }
+ }
+   
+   
 
  uint16_t set_checkbox_bot (char* str1,char* name,char* value,char* mess,char* id)
 { 
@@ -435,6 +466,10 @@ sprintf(str1,"<input type=\"text\" name=\"%s\"  size='%s' value=\"%s\">&ensp;",n
 
 return len;
 }
+
+
+
+
 
 
 uint16_t set_table_string (char* str1,char* name,char* value)
@@ -568,6 +603,7 @@ uint32_t costr_page2(char* str1)
    
    
      len=strlen(str1);
+     while(len>3000){}
   return len;
 };
    
@@ -685,6 +721,7 @@ uint32_t costr_page2_1(char* str1)
   
   
   len=strlen(str1);
+  while(len>3000){}
   return len;
 };
 
@@ -893,6 +930,7 @@ uint32_t costr_page4(char* str1)
   
   
   len=strlen(str1);
+       while(len>3000){}
   return len;
 };
 
@@ -1040,6 +1078,7 @@ uint32_t costr_page3(char* str1)
 
   
   len=strlen(str1);
+       while(len>3000){}
   return len;
 };
 
@@ -1140,6 +1179,7 @@ uint32_t costr_page5(char* str1)
 //  strcat(str1,str2);
    
   len=strlen(str1);
+       while(len>3000){}
   return len;
 };
 
@@ -1251,6 +1291,7 @@ uint32_t costr_page6(char* str1)
 
    
      len=strlen(str1);
+          while(len>3000){}
   return len;
 };
    
@@ -1365,6 +1406,7 @@ uint32_t costr_page6(char* str1)
   
    
   len=strlen(str1);
+       while(len>3000){}
   return len;
 };
 
@@ -1463,6 +1505,7 @@ uint32_t costr_page7(char* str1)
    
      
   len=strlen(str1);
+       while(len>3000){}
   return len;
 };
 
@@ -1598,6 +1641,7 @@ uint32_t costr_page7(char* str1)
   
   
   len=strlen(str1);
+       while(len>3000){}
   return len;
 };
 
@@ -1680,6 +1724,7 @@ uint32_t costr_page8(char* str1)
   strcat(str1,http_logs_area);
   
   len=strlen(str1);
+       while(len>3000){}
   return len;
 }  
   
@@ -1712,5 +1757,467 @@ uint32_t costr_page9(char* str1)
 
   
   len=strlen(str1);
+       while(len>3000){}
+  return len;
+};
+
+uint32_t costr_watchdog1(char* str1)
+{
+  uint32_t len;
+  
+  memset (str1,0, sizeof(str1)); 
+  memset (str2,0, sizeof(str2));
+  memset (str3,0, sizeof(str3));
+  memset (str4,0, sizeof(str4));
+
+  strcat(str1,http_html_start_constr);
+  
+
+  strcat(str1,http_html_style);
+  
+  set_open_block(str2,"body");
+  strcat(str1,str2);
+  
+  set_open_block(str2,"ul");
+  strcat(str1,str2);
+  
+  
+  set_open_block(str2,"lf");
+  strcat(str1,str2);
+  
+ 
+  set_string_text(str2,"Интеллектуальная розетка DKST 59 v","h4",0,FW_data.V_FW1_VER);
+  strcat(str1,str2);
+    
+  reset_open_block(str2,"lf");
+  strcat(str1,str2);
+  
+  
+  
+  set_open_block(str2,"h2");
+  strcat(str1,str2);
+  
+  
+  set_link(str2,"Главная","index.html");
+  strcat(str1,str2);
+  
+  set_link(str2,"Настройки ","settings.html");
+  strcat(str1,str2);
+  
+  set_link(str2,"Расписание ","rasp.html");
+  strcat(str1,str2);
+  
+  set_link(str2,"Сторож","watchdog.html");
+  strcat(str1,str2);
+  
+  
+  set_link(str2,"E-mail","email.html");
+  strcat(str1,str2);  
+  
+  set_link(str2,"Журнал ","logs.html");
+  strcat(str1,str2);  
+    
+  reset_open_block(str2,"h2");
+  strcat(str1,str2);
+
+  reset_open_block(str2,"ul");
+  strcat(str1,str2);
+////
+////  set_open_block(str2,"form action='/' method='GET'");
+////  strcat(str1,str2);
+ //    len=strlen(str1);
+  
+  
+  
+  set_open_block(str2,"form id=\"sets\" action='/' method='POST'");
+ strcat(str1,str2);
+  
+//  set_open_block(str2,"ul");
+//  strcat(str1,str2);
+ set_open_block(str2,"h2");
+  strcat(str1,str2);
+  
+  
+  set_br(str2,2);
+  strcat(str1,str2);
+
+  set_open_block(str2,"b>НАСТРОЙКА РЕЖИМА СТОРОЖ</b");
+  strcat(str1,str2);
+  
+  set_br(str2,1);
+  strcat(str1,str2);
+  
+  reset_open_block(str2,"h2");
+  strcat(str1,str2);
+  
+  set_open_block(str2,"h3");
+  strcat(str1,str2);
+  // Table   
+   set_open_block(str2,"table border=\"1\" style=\"border-collapse: collapse; width: 80%;border: 1px solid #ffffff;margin: auto;required\"><tbody");
+   strcat(str1,str2);    
+
+  //uint16_t set_text_area  (char* str1,char* name, uint8_t n,uint8_t c, uint8_t r,uint8_t* dat)
+   //set_checkbox_bot(str2,"load_def","1","Загрузить исходные настройки");  
+  //set_text_input(str3,"name_dev",16,FW_data.V_Name_dev);  
+   
+   
+   memset (str3,0, sizeof(str3));
+ //  set_checkbox (str3,"V_EN_WATCHDOG","1","WDT",FW_data.V_EN_WATCHDOG);
+   set_checkonoff (str3,"V_EN_WATCHDOG",FW_data.V_EN_WATCHDOG);// (char* str1,char* name,uint8_t ck)
+   set_table_string(str2,"Включить режим 'Сторож'",str3);
+   strcat(str1,str2);
+   len=strlen(str1); 
+   
+   memset (str3,0, sizeof(str3));
+   memset (str4,0, sizeof(str4));
+   set_checkbox (str4,"V_EN_WATCHDOG_CN_A","1","A",FW_data.V_EN_WATCHDOG_CN_A);
+   strcat(str3,str4);
+   set_open_block(str4,"b>A    </b");
+   strcat(str3,str4);
+   len=strlen(str3);
+    
+   memset (str4,0, sizeof(str4));
+   set_checkbox (str4,"V_EN_WATCHDOG_CN_B","1","B",FW_data.V_EN_WATCHDOG_CN_B);
+   strcat(str3,str4);
+   set_open_block(str4,"b>B    </b");
+   strcat(str3,str4);
+   len=strlen(str3);
+    
+   memset (str4,0, sizeof(str4));
+   set_checkbox (str4,"V_EN_WATCHDOG_CN_C","1","C",FW_data.V_EN_WATCHDOG_CN_C);
+   strcat(str3,str4);
+   set_open_block(str4,"b>C    </b");
+   strcat(str3,str4);
+   len=strlen(str3);   
+   
+   set_table_string(str2,"Выбрать контролируемые адреса",str3);
+   strcat(str1,str2);  
+   
+   
+//   set_text_input(str3,"name_dev",16,FW_data.V_Name_dev);  
+//   set_table_string(str2,"Включить режим 'Сторож'",str3);
+//   strcat(str1,str2);
+   
+//   set_text_input(str3,"geo_place",32,FW_data.V_GEOM_NAME);  
+//   set_table_string(str2,"Место установки устройства",str3);  
+//   strcat(str1,str2);
+//   
+   
+   len=strlen(str1);
+        while(len>3000){}
+  return len;
+};  
+
+
+uint32_t costr_watchdog2(char* str1)
+{
+  uint32_t len;
+  
+  memset (str1,0, sizeof(str1)); 
+  memset (str2,0, sizeof(str2));
+  memset (str3,0, sizeof(str3));
+  memset (str4,0, sizeof(str4));
+
+   sprintf(str4,"%d\.%d\.%d\.%d",FW_data.V_IP_WDT_ADDR_CN_A[0],FW_data.V_IP_WDT_ADDR_CN_A[1],FW_data.V_IP_WDT_ADDR_CN_A[2],FW_data.V_IP_WDT_ADDR_CN_A[3]);  
+   set_text_input(str3,"V_IP_WDT_ADDR_CN_A",15,str4);  
+   set_table_string(str2,"IP адресс канал А",str3);
+   strcat(str1,str2);
+   
+   sprintf(str4,"%d\.%d\.%d\.%d",FW_data.V_IP_WDT_ADDR_CN_B[0],FW_data.V_IP_WDT_ADDR_CN_B[1],FW_data.V_IP_WDT_ADDR_CN_B[2],FW_data.V_IP_WDT_ADDR_CN_B[3]);
+   set_text_input(str3,"V_IP_WDT_ADDR_CN_B",15,str4);  
+   set_table_string(str2,"IP адресс канал B",str3);  
+   strcat(str1,str2);
+   
+   sprintf(str4,"%d\.%d\.%d\.%d",FW_data.V_IP_WDT_ADDR_CN_C[0],FW_data.V_IP_WDT_ADDR_CN_C[1],FW_data.V_IP_WDT_ADDR_CN_C[2],FW_data.V_IP_WDT_ADDR_CN_C[3]);
+   set_text_input(str3,"V_IP_WDT_ADDR_CN_C",15,str4);  
+   set_table_string(str2,"IP адресс канал C",str3);  
+   strcat(str1,str2);
+   
+   sprintf(str3,"<b>%d</b>",FW_data.V_CT_RES_ALLSTART);  
+  // set_intnum(str3,"V_CT_RES_ALLSTART",4,str4,0,1000);  
+  //  set_open_block(str2,"b>НАСТРОЙКА РЕЖИМА СТОРОЖ</b");
+   set_table_string(str2,"Cчетчик сбросов канала (обнуляется при перезагрузке прошивки)",str3);
+   strcat(str1,str2);
+   
+   sprintf(str4,"%d",FW_data.V_T_SEND_PING);
+   set_intnum(str3,"V_T_SEND_PING",3,str4,10,301);  
+   set_table_string(str2,"Период опроса пингов 10-300с",str3);  
+   strcat(str1,str2);
+   
+   sprintf(str4,"%d",FW_data.V_TIME_RESEND_PING);
+   set_intnum(str3,"V_TIME_RESEND_PING",4,str4,600,9000);  
+   set_table_string(str2,"Таймаут перед повтором пинга  600-9000 мc",str3);  
+   strcat(str1,str2);
+   
+     len=strlen(str1);
+          while(len>3000){}
+  return len;
+};
+
+
+
+uint32_t costr_watchdog3(char* str1)
+{
+  uint32_t len;
+  
+  memset (str1,0, sizeof(str1)); 
+  memset (str2,0, sizeof(str2));
+  memset (str3,0, sizeof(str3));
+  memset (str4,0, sizeof(str4));
+  
+   sprintf(str4,"%d",FW_data.V_MAX_REPID_PING);  
+   set_intnum(str3,"V_MAX_REPID_PING",3,str4,0,100);  
+   set_table_string(str2,"Максимальное число перезапросов",str3);
+   strcat(str1,str2);
+   
+   sprintf(str4,"%d",FW_data.V_TIME_RESET_PULSE);
+   set_intnum(str3,"V_TIME_RESET_PULSE",3,str4,1,901);  
+   set_table_string(str2,"Длительность сброса 1-900с",str3);  
+   strcat(str1,str2);
+   
+   sprintf(str4,"%d",FW_data.V_PAUSE_RESET_TO_REPID);
+   set_intnum(str3,"V_PAUSE_RESET_TO_REPID",4,str4,1,3600);  
+   set_table_string(str2,"Пауза после сброса перед возобновлением пингов 1-3600с",str3);  
+   strcat(str1,str2);
+   
+   sprintf(str4,"%d",FW_data.V_MAX_RESEND_PACET_RESET);
+   set_intnum(str3,"V_MAX_RESEND_PACET_RESET",3,str4,1,255);  
+   set_table_string(str2,"Ограничение числа идущих подряд сбросов 1-255",str3);  
+   strcat(str1,str2);
+   
+     reset_open_block(str2,"tbody"); 
+  strcat(str1,str2); 
+  
+  reset_open_block(str2,"table");
+  strcat(str1,str2);
+     
+  set_br(str2,1);
+  strcat(str1,str2);
+  
+  
+  set_open_block(str2,"h2");
+  strcat(str1,str2);
+ 
+  set_open_block(str2,"b>НАСТРОЙКА РЕЖИМА ВЫХОДА</b");
+  strcat(str1,str2);
+  
+  
+  reset_open_block(str2,"h2");
+  strcat(str1,str2);
+  
+  
+//  set_br(str2,1);
+//  strcat(str1,str2);
+  
+  // Table   
+   set_open_block(str2,"table border=\"1\" style=\"border-collapse: collapse; width: 80%;border: 1px solid #ffffff;margin: auto;required\"><tbody");
+   strcat(str1,str2);   
+
+   
+   
+   
+   
+  
+  
+  
+  
+  
+   
+     len=strlen(str1);
+          while(len>3000){}
+  return len;
+};
+
+uint32_t costr_watchdog4(char* str1)
+{
+  uint32_t len;
+  
+  memset (str1,0, sizeof(str1)); 
+  memset (str2,0, sizeof(str2));
+  memset (str3,0, sizeof(str3));
+  memset (str4,0, sizeof(str4));
+
+   if (FW_data.V_TYPE_OUT ==0)
+   {
+   set_open_block(str3,"input name=\"output_type\" type=\"radio\" value=\"0\"checked");
+   set_table_string(str2,"Прямое управление ",str3);  
+   strcat(str1,str2);
+   }
+   else
+   {
+   set_open_block(str3,"input name=\"output_type\" type=\"radio\" value=\"0\"");
+   set_table_string(str2,"Прямое управление ",str3);  
+   strcat(str1,str2);   
+   }
+   
+   
+   if (FW_data.V_TYPE_OUT ==1)
+   {
+    set_open_block(str3,"input name=\"output_type\" type=\"radio\" value=\"1\"checked");
+   set_table_string(str2,"Инвертированное управление",str3);  
+   strcat(str1,str2);
+   }
+   else
+   {
+   set_open_block(str3,"input name=\"output_type\" type=\"radio\" value=\"1\"");
+   set_table_string(str2,"Инвертированное управление",str3);  
+   strcat(str1,str2);
+   
+   }
+   
+    if (FW_data.V_TYPE_OUT ==2)
+   {
+   set_open_block(str3,"input name=\"output_type\" type=\"radio\" value=\"2\"checked");
+   set_table_string(str2,"Импульс включения",str3);  
+   strcat(str1,str2);
+   }
+   else
+   {
+      set_open_block(str3,"input name=\"output_type\" type=\"radio\" value=\"2\"");
+   set_table_string(str2,"Импульс включения",str3);  
+   strcat(str1,str2);   
+   }
+   
+   
+    if (FW_data.V_TYPE_OUT ==3)
+   {   
+   set_open_block(str3,"input name=\"output_type\" type=\"radio\" value=\"3\"checked");
+   set_table_string(str2,"Импульс выключения",str3);  
+   strcat(str1,str2);
+   }
+   else
+   {
+   set_open_block(str3,"input name=\"output_type\" type=\"radio\" value=\"3\"");
+   set_table_string(str2,"Импульс выключения",str3);  
+   strcat(str1,str2);
+   }
+   
+     reset_open_block(str2,"tbody"); 
+  strcat(str1,str2); 
+  
+  reset_open_block(str2,"table");
+  strcat(str1,str2);
+     
+  set_br(str2,1);
+  strcat(str1,str2);
+  
+  
+  set_open_block(str2,"h2");
+  strcat(str1,str2);
+ 
+  set_open_block(str2,"b>НАСТРОЙКА ЛОГИКИ УПРАВЛЕНИЯ</b");
+  strcat(str1,str2);
+  
+  
+  reset_open_block(str2,"h2");
+  strcat(str1,str2);
+  
+  
+//  set_br(str2,1);
+//  strcat(str1,str2);
+  
+  // Table   
+ 
+     len=strlen(str1);
+          while(len>3000){}
+  return len;
+};
+   
+   uint32_t costr_watchdog5(char* str1)
+{
+  uint32_t len;
+  
+  memset (str1,0, sizeof(str1)); 
+  memset (str2,0, sizeof(str2));
+  memset (str3,0, sizeof(str3));
+  memset (str4,0, sizeof(str4));
+  
+  
+   set_open_block(str2,"table border=\"1\" style=\"border-collapse: collapse; width: 80%;border: 1px solid #ffffff;margin: auto;required\"><tbody");
+   strcat(str1,str2);   
+
+   
+   if (FW_data.V_TYPE_LOGIC ==0)
+   {
+   set_open_block(str3,"input name=\"output_logic\" type=\"radio\" value=\"0\"checked");
+   set_table_string(str2,"Не ответил хотя бы один опрашиваемый адрес (A,B,C) ",str3);  
+   strcat(str1,str2);
+   }
+   else
+   {
+   set_open_block(str3,"input name=\"output_logic\" type=\"radio\" value=\"0\"");
+   set_table_string(str2,"Не ответил хотя бы один опрашиваемый адрес (A,B,C)",str3);  
+   strcat(str1,str2);   
+   }
+   
+    if (FW_data.V_TYPE_LOGIC ==1)
+   {
+    set_open_block(str3,"input name=\"output_logic\" type=\"radio\" value=\"1\"checked");
+   set_table_string(str2,"Не ответил ни один из опрашиваемых адресов (A,B,C)",str3);  
+   strcat(str1,str2);
+   }
+   else
+   {
+   set_open_block(str3,"input name=\"output_logic\" type=\"radio\" value=\"1\"");
+   set_table_string(str2,"Не ответил ни один из опрашиваемых адресов (A,B,C)",str3);  
+   strcat(str1,str2);
+   
+   }
+   
+    if (FW_data.V_TYPE_LOGIC ==2)
+   {
+   set_open_block(str3,"input name=\"output_logic\" type=\"radio\" value=\"2\"checked");
+   set_table_string(str2,"Не ответил адрес А и один из B или C",str3);  
+   strcat(str1,str2);
+   }
+   else
+   {
+      set_open_block(str3,"input name=\"output_logic\" type=\"radio\" value=\"2\"");
+   set_table_string(str2,"Не ответил адрес А и один из B или C",str3);  
+   strcat(str1,str2);   
+   }
+   
+   
+    if (FW_data.V_TYPE_LOGIC ==3)
+   {   
+   set_open_block(str3,"input name=\"output_logic\" type=\"radio\" value=\"3\"checked");
+   set_table_string(str2,"не ответил адрес А, однако ответил B или C",str3);  
+   strcat(str1,str2);
+   }
+   else
+   {
+   set_open_block(str3,"input name=\"output_logic\" type=\"radio\" value=\"3\"");
+   set_table_string(str2,"Не ответил адрес А, однако ответил B или C",str3);  
+   strcat(str1,str2);
+   }
+   
+////////   set_text_input(str3,"call_data",32,FW_data.V_CALL_DATA);  
+////////   set_table_string(str2,"Контактные данные",str3);  
+////////   strcat(str1,str2);
+////////   
+   set_submit(str3,"save_all","1","Сохранить","sets");
+   set_table_string(str2,"Сохранить настройки ",str3);  
+   strcat(str1,str2);
+   
+  reset_open_block(str2,"h3");
+  strcat(str1,str2);
+   
+ 
+   reset_open_block(str2,"tbody");
+   strcat(str1,str2);
+  
+   reset_open_block(str2,"table");
+   strcat(str1,str2);
+   
+//
+  reset_open_block(str2,"form");
+  strcat(str1,str2);
+  
+  
+
+
+  
+  len=strlen(str1);
+       while(len>3000){}
   return len;
 };

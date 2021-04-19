@@ -28,7 +28,7 @@
 #include "flash_if.h"
 #include "dns.h"
 #include "snmp_ex.h"
-    
+#include "app.h"    
 /* USER CODE BEGIN 0 */
 
 /* USER CODE END 0 */
@@ -62,10 +62,16 @@ uint8_t GATEWAY_ADDRESS[4];
   */
 void MX_LWIP_Init(void)
 {
+    
+    ip4_addr_t ipdns;
+  
+       IP4_ADDR(&ipdns, FW_data.V_IP_DNS[0], FW_data.V_IP_DNS[1], FW_data.V_IP_DNS[2], FW_data.V_IP_DNS[3]);
+       dns_setserver (0,&ipdns);
+       
+       
   /* Initilialize the LwIP stack with RTOS */
   tcpip_init( NULL, NULL );
-  
-    ip4_addr_t ipdns;
+
   
 if (FW_data.V_DHCP!=1)
 {
@@ -86,20 +92,11 @@ if (FW_data.V_DHCP!=1)
   IP4_ADDR(&ipaddr, IP_ADDRESS[0], IP_ADDRESS[1], IP_ADDRESS[2], IP_ADDRESS[3]);
   IP4_ADDR(&netmask, NETMASK_ADDRESS[0], NETMASK_ADDRESS[1] , NETMASK_ADDRESS[2], NETMASK_ADDRESS[3]);
   IP4_ADDR(&gw, GATEWAY_ADDRESS[0], GATEWAY_ADDRESS[1], GATEWAY_ADDRESS[2], GATEWAY_ADDRESS[3]);
-  
+   flag_set_ip=1;
 }
 else
 {
-//  ip_addr_set_zero_ip4(&ipaddr);
-//  ip_addr_set_zero_ip4(&netmask);
-//  ip_addr_set_zero_ip4(&gw);
-////// uint8_t LWIP_DHCP =1;
-//  
-          
-//		osDelay (1000);
-//		dhcp_start (&gnetif);
-
-   ipaddr.addr = 0;
+  ipaddr.addr = 0;
   netmask.addr = 0;
   gw.addr = 0;               
                 
@@ -137,11 +134,12 @@ else
   osThreadDef(LinkThr, ethernetif_set_link, osPriorityBelowNormal, 0, configMINIMAL_STACK_SIZE * 2);
   osThreadCreate (osThread(LinkThr), &link_arg);
 /* USER CODE END OS_THREAD_DEF_CREATE_CMSIS_RTOS_V1 */
-       IP4_ADDR(&ipdns, FW_data.V_IP_DNS[0], FW_data.V_IP_DNS[1], FW_data.V_IP_DNS[2], FW_data.V_IP_DNS[3]);
-       dns_setserver (0,&ipdns);
+
   /* Start DHCP negotiation for a network interface (IPv4) */
+  if ( flag_set_ip==0 )
+  {    
   dhcp_start(&gnetif);
-  
+  } 
 /* USER CODE BEGIN 3 */
 
 /* USER CODE END 3 */

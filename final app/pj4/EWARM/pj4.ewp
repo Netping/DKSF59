@@ -677,11 +677,11 @@
                 </option>
                 <option>
                     <name>OCOutputOverride</name>
-                    <state>0</state>
+                    <state>1</state>
                 </option>
                 <option>
                     <name>OOCOutputFile</name>
-                    <state>pj4.bin</state>
+                    <state>pj4b.bin</state>
                 </option>
                 <option>
                     <name>OOCCommandLineProducer</name>
@@ -1102,6 +1102,9 @@
             <group>
                 <name>Core</name>
                 <file>
+                    <name>$PROJ_DIR$\..\Core\Src\app.c</name>
+                </file>
+                <file>
                     <name>$PROJ_DIR$\..\Core\Src\base64.c</name>
                 </file>
                 <file>
@@ -1112,6 +1115,9 @@
                 </file>
                 <file>
                     <name>$PROJ_DIR$\..\Core\Src\freertos.c</name>
+                </file>
+                <file>
+                    <name>$PROJ_DIR$\..\Core\Src\hard_config.c</name>
                 </file>
                 <file>
                     <name>$PROJ_DIR$\..\Core\Src\html_page.c</name>
@@ -1126,7 +1132,13 @@
                     <name>$PROJ_DIR$\..\Core\Src\main.c</name>
                 </file>
                 <file>
+                    <name>$PROJ_DIR$\..\Core\Src\ntp.c</name>
+                </file>
+                <file>
                     <name>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\apps\ping\ping.c</name>
+                </file>
+                <file>
+                    <name>$PROJ_DIR$\..\Core\Src\smtp.c</name>
                 </file>
                 <file>
                     <name>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\apps\snmp\snmp_ex.c</name>
@@ -1139,6 +1151,9 @@
                 </file>
                 <file>
                     <name>$PROJ_DIR$\..\Core\Src\stm32f1xx_it.c</name>
+                </file>
+                <file>
+                    <name>$PROJ_DIR$\..\Core\Src\syslog.c</name>
                 </file>
                 <file>
                     <name>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\apps\udpecho\udpecho.c</name>
@@ -1197,6 +1212,9 @@
             </file>
             <file>
                 <name>$PROJ_DIR$\..\Drivers\STM32F1xx_HAL_Driver\Src\stm32f1xx_hal_gpio_ex.c</name>
+            </file>
+            <file>
+                <name>$PROJ_DIR$\..\Drivers\STM32F1xx_HAL_Driver\Src\stm32f1xx_hal_iwdg.c</name>
             </file>
             <file>
                 <name>$PROJ_DIR$\..\Drivers\STM32F1xx_HAL_Driver\Src\stm32f1xx_hal_pwr.c</name>

@@ -29,6 +29,7 @@
 #include "stm32f1xx_hal_def.h"
 #include "stm32_hal_legacy.h"
 #include "stm32f1xx_hal_gpio.h"
+#include  "stm32f1xx_hal_eth.h"
 #include <string.h>
 #include <stdint.h>
 #include "crc16.h"
@@ -47,6 +48,8 @@ uint8_t flag_global_save_log;
 uint8_t flag_global_swich_out;
 uint8_t flag_global_boot_mode;
 uint8_t flag_global_reset_mode;
+uint8_t flag_my_smtp_test;
+uint8_t status_NTP_activ;
 log_reple_t start_time;
 log_reple_t real_time;
 file_data_t data_file;
@@ -68,7 +71,7 @@ uint32_t *idBase3 = (uint32_t*)(UID_BASE + 0x08);
   
   
 
-////__root const uint16_t  CRC_APP  @ A_CRC_APP;
+//__root const uint16_t  CRC_APP  @ A_CRC_APP;
 ////__root const uint16_t  CRC_BOOT  @ A_CRC_DATA_BOOT;
 ////__root const uint8_t IP_CONFIG[4] @ A_IP_ADRESS;
 ////
@@ -78,7 +81,7 @@ uint32_t *idBase3 = (uint32_t*)(UID_BASE + 0x08);
 ////
 ////__root const uint8_t FW_VER[4] @ A_FW_VER ;
 ////
-////__root const uint32_t FW_LEN @ A_FW_LEN ;
+//__root const uint32_t FW_LEN @ A_FW_LEN ;
 ////
 ////__root const uint8_t BOOT_VER[4] @ A_BOOT_VER;
 ////__root const char LOG[2000] @ A_LOG;
@@ -345,7 +348,7 @@ void jamp_to_app (void)
   flag_app_start=0;
  }
 }
- 
+ extern ETH_HandleTypeDef heth;
 void jamp_to_boot (void)
 {
   uint32_t addr_met =0x08000000;
@@ -354,11 +357,17 @@ void jamp_to_boot (void)
   HAL_SuspendTick();
   __disable_irq();
   GPIO_InitTypeDef GPIO_InitStruct = {0};
- if ((data_met!=0xFFFFFFFF)&&(data_met!=0))
- {
- // HAL_ETH_DeInit(&hetho);
- /// HAL_DMA_DeInit(&hdma_ETHtomem_dma1_channel1);
-
+// if ((data_met!=0xFFFFFFFF)&&(data_met!=0))
+// {
+ 
+//  ETH_MACReceptionDisable(&heth);
+//  ETH_DMATransmissionDisable(&heth);
+//  ETH_DMAReceptionDisable(&heth);
+  HAL_ETH_Stop(&heth);
+   HAL_ETH_DeInit(&heth);  
+//  HAL_ETH_MspDeInit(&heth);
+  //HAL_DMA_DeInit(&hdma_ETHtomem_dma1_channel1);
+__HAL_RCC_LSI_DISABLE();
      /*Configure GPIO pin : PHY_RST_Pin */
   GPIO_InitStruct.Pin = PHY_RST_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_OD;
@@ -387,7 +396,7 @@ void jamp_to_boot (void)
   uint32_t jumpAddress = *((volatile uint32_t*)(0x08000000 + 4));
   pFunction Jump_To_Application = (pFunction) jumpAddress;
   Jump_To_Application();
- }
+// }
 
 }
 
@@ -406,7 +415,7 @@ uint8_t save_data_blok (uint8_t N_sector,uint32_t* struct_to)
   if (N_sector==1)
     {
     blok=1;
-    start_addr=0x8004800;
+    start_addr=A_CRC_LOG;
     
     }
     else
@@ -442,11 +451,11 @@ uint8_t save_data_blok (uint8_t N_sector,uint32_t* struct_to)
       
       uint8_t load_def_data(void)
       {
-           FW_data.V_CRC_APP=0;
+        FW_data.V_CRC_APP=*((uint16_t *)A_CRC_APP);
       
      FW_data.V_IP_CONFIG[0]=192;
      FW_data.V_IP_CONFIG[1]=168;
-     FW_data.V_IP_CONFIG[2]=0;
+     FW_data.V_IP_CONFIG[2]=3;
      FW_data.V_IP_CONFIG[3]=21;
      
      FW_data.V_IP_MASK[0]=255;
@@ -456,15 +465,15 @@ uint8_t save_data_blok (uint8_t N_sector,uint32_t* struct_to)
      
      FW_data.V_IP_GET[0]=192;
      FW_data.V_IP_GET[1]=168;
-     FW_data.V_IP_GET[2]=0;
-     FW_data.V_IP_GET[3]=100; 
+     FW_data.V_IP_GET[2]=3;
+     FW_data.V_IP_GET[3]=1; 
    
      FW_data.V_FW1_VER[0]=0;
      FW_data.V_FW1_VER[1]=0;
      FW_data.V_FW1_VER[2]=0;
      FW_data.V_FW1_VER[3]=1;
-     FW_data.V_FW1_LEN=0;
-     FW_data.V_BOOT_VER = BOOT_VER_FW;
+     FW_data.V_FW1_LEN=*((uint32_t *)A_FW_LEN);
+     FW_data.V_BOOT_VER = *((uint32_t *)A_BOOT_VER);
      FW_data.V_CRC_DATA = 0;
      FW_data.V_DHCP = 0;
       memset((uint8_t*)&FW_data.V_LOGIN,0,16);
@@ -484,12 +493,14 @@ uint8_t save_data_blok (uint8_t N_sector,uint32_t* struct_to)
      memset((uint8_t*)&FW_data.V_OFF_MESS,0,32);
      memcpy((uint8_t*)&FW_data.V_OFF_MESS, (uint8_t *)"Power swich OFF", 15);
      FW_data.V_FLAG_EN_MAN =1;
-     FW_data.V_FLAG_EN_RASP =1;
+     FW_data.V_FLAG_EN_RASP =0;
      FW_data.V_FLAG_EN_WEB =1;
-     FW_data.V_FLAG_EN_WATCHMAN =1;
+     FW_data.V_FLAG_EN_WATCHMAN =0;
      memset((uint8_t*)&FW_data.V_EMAIL_ERR,0,32);
-     memset((uint8_t*)&FW_data.V_D_TIME,0,40);
-     memset((uint8_t*)&FW_data.V_RD_TIME,0,12);
+     memset((uint8_t*)&FW_data.V_D_TIME,61,sizeof(FW_data.V_D_TIME));
+     memset((uint8_t*)&FW_data.V_RD_DATA,61,sizeof(FW_data.V_RD_DATA));
+     
+     
      FW_data.V_IP_PING_TIME = 9999;
      FW_data.V_TIME_SEND = 9999;
      FW_data.V_TIME_READ = 9999;
@@ -498,23 +509,39 @@ uint8_t save_data_blok (uint8_t N_sector,uint32_t* struct_to)
      FW_data.V_DELAY_PING = 9999;
      FW_data.V_SOST_RESET = 0;
      FW_data.V_N_PING = 255;
-     FW_data.V_IP_NTP1[0]=62;//     62.117.76.142
-     FW_data.V_IP_NTP1[1]=117;
-     FW_data.V_IP_NTP1[2]=76;
-     FW_data.V_IP_NTP1[3]=142;
+     FW_data.V_IP_NTP1[0]=85;//    85.21.78.23
+     FW_data.V_IP_NTP1[1]=21;
+     FW_data.V_IP_NTP1[2]=78;
+     FW_data.V_IP_NTP1[3]=23;
      
-     FW_data.V_IP_NTP2[0]=192; //192.43.244.18
-     FW_data.V_IP_NTP2[1]=43; //192.43.244.18
-     FW_data.V_IP_NTP2[2]=244; //192.43.244.18
-     FW_data.V_IP_NTP2[3]=18; //192.43.244.18
+     FW_data.V_IP_NTP2[0]=194; 
+     FW_data.V_IP_NTP2[1]=190; 
+     FW_data.V_IP_NTP2[2]=168; 
+     FW_data.V_IP_NTP2[3]=1; 
      FW_data.V_PORT_NTP  = 123;
-     memset((uint8_t*)&FW_data.V_NAME_SMTP,0,16);
-     memcpy((uint8_t*)&FW_data.V_NAME_SMTP, (uint8_t *)"Name SNMP Server",16);
+     memset((uint8_t*)&FW_data.V_NAME_SMTP,0,32);
+     memcpy((uint8_t*)&FW_data.V_NAME_SMTP, (uint8_t *)"Name SNMP Server",32);
      FW_data.V_PORT_SNMP = 162;
-     memset((uint8_t*)&FW_data.V_LOGIN_SMTP,0,16);
+     memset((uint8_t*)&FW_data.V_LOGIN_SMTP,0,32);
      memcpy((uint32_t*)&FW_data.V_LOGIN_SMTP, (uint32_t *)"admin", 5);
-     memset((uint8_t*)&FW_data.V_PASSWORD_SMTP,0,16);
+     memset((uint8_t*)&FW_data.V_PASSWORD_SMTP,0,32);
      memcpy((uint32_t*)&FW_data.V_PASSWORD_SMTP, (uint32_t *)"admin", 5);
+     FW_data.V_FLAG_EMAIL_PORT=25;
+     
+     memset((uint8_t*)&FW_data.V_EMAIL_ADDR,0,32);
+     memcpy((uint32_t*)&FW_data.V_EMAIL_ADDR, (uint32_t *)"", 5);
+
+     memset((uint8_t*)&FW_data.V_EMAIL_FROM,0,32);
+     memcpy((uint32_t*)&FW_data.V_EMAIL_FROM, (uint32_t *)"", 5);
+
+     memset((uint8_t*)&FW_data.V_EMAIL_TO,0,32);
+     memcpy((uint32_t*)&FW_data.V_EMAIL_TO, (uint32_t *)"", 5);
+
+
+
+     
+     
+     
      memcpy((uint32_t*)&FW_data.V_GEOM_NAME, (uint32_t *)"Moscow office", 13);    
      
     FW_data.V_ID_MAC[0] =   00;//(uint16_t)idBase0[0];
@@ -528,19 +555,25 @@ uint8_t save_data_blok (uint8_t N_sector,uint32_t* struct_to)
     memcpy((uint8_t*)&FW_data.V_Name_dev,(uint8_t *)"DKSF 59",7);    
     memcpy((uint8_t*)&FW_data.V_CALL_DATA,(uint8_t *)"netping.ru",10);   
     
-    memset((uint8_t*)&FW_data.V_resv,0,1659);
+//    memset((uint8_t*)&FW_data.V_resv,0,1659);
     FW_data.V_logs_struct.CRC16 = 0;
     memset((uint8_t*)&FW_data.V_logs_struct.log_reple,0,2000);
      
+     FW_data.V_IP_SYSL[0]=0;//     62.117.76.142
+     FW_data.V_IP_SYSL[1]=0;
+     FW_data.V_IP_SYSL[2]=0;
+     FW_data.V_IP_SYSL[3]=0;
+    
+    
      FW_data.V_IP_SNMP[0]=192;//     62.117.76.142
      FW_data.V_IP_SNMP[1]=168;
      FW_data.V_IP_SNMP[2]=0;
      FW_data.V_IP_SNMP[3]=152;
      FW_data.V_TYPE_OUT=0;
      
-     FW_data.V_NTP_CIRCL = 0;
+     FW_data.V_NTP_CIRCL = 4;
      
-     FW_data.V_CRC_BOOT=crc16_ccitt((uint8_t*)&(FW_data.V_IP_CONFIG[0]),24);     
+     FW_data.V_CRC_BOOT=*((uint16_t *)A_CRC_DATA_BOOT);  
      FW_data.V_logs_struct.CRC16 = crc16_ccitt((uint8_t*)&(FW_data.V_logs_struct.log_reple[0]),2000);
      FW_data.V_CRC_DATA=crc16_ccitt((uint8_t*)&(FW_data.V_DHCP),2018);
      

@@ -118,8 +118,8 @@ static BlockLink_t xStart, *pxEnd = NULL;
 
 /* Keeps track of the number of free bytes remaining, but says nothing about
 fragmentation. */
-static size_t xFreeBytesRemaining = 0U;
-static size_t xMinimumEverFreeBytesRemaining = 0U;
+ size_t xFreeBytesRemaining = 0U;
+ size_t xMinimumEverFreeBytesRemaining = 0U;
 
 /* Gets set to the top bit of an size_t type.  When this bit in the xBlockSize
 member of an BlockLink_t structure is set then the block belongs to the
@@ -255,8 +255,9 @@ void *pvReturn = NULL;
 	{
 		if( pvReturn == NULL )
 		{
-			extern void vApplicationMallocFailedHook( void );
-			vApplicationMallocFailedHook();
+////			extern void vApplicationMallocFailedHook( void );
+////			vApplicationMallocFailedHook();
+                        return NULL;
 		}
 		else
 		{
@@ -284,8 +285,8 @@ BlockLink_t *pxLink;
 		pxLink = ( void * ) puc;
 
 		/* Check the block is actually allocated. */
-		configASSERT( ( pxLink->xBlockSize & xBlockAllocatedBit ) != 0 );
-		//configASSERT( pxLink->pxNextFreeBlock == NULL );
+	///	configASSERT( ( pxLink->xBlockSize & xBlockAllocatedBit ) != 0 );
+		configASSERT( pxLink->pxNextFreeBlock == NULL );
 
 		if( ( pxLink->xBlockSize & xBlockAllocatedBit ) != 0 )
 		{

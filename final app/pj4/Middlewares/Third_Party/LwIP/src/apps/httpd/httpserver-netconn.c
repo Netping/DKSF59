@@ -62,7 +62,7 @@
 #include "LOGS.h"
 #include "smtp.h"
 
-#define delay_send 10
+#define delay_send 20
 /* Private typedef -----------------------------------------------------------*/
 /* Private define ------------------------------------------------------------*/
 #define WEBSERVER_THREAD_PRIO    ( osPriorityAboveNormal )
@@ -1186,6 +1186,7 @@ void param_run(post_data_t* post_data,uint8_t index)
           // while(flag_global_save_log==1){vTaskDelay(10);};
            vTaskDelay(100);
            flag_global_boot_mode=1;
+           page_n=9;
           // jamp_to_boot();
           }
     else
@@ -1512,6 +1513,14 @@ post_data_t elem_post_data;
                vTaskDelay(delay_send);
             }
           break;                         
+             case 9:
+            {
+               vTaskDelay(delay_send);
+               len_buf_list=costr_page_boot((char*)buf_list);
+               netconn_write(conn, (char*)(buf_list), (size_t)len_buf_list, NETCONN_NOCOPY);      
+               vTaskDelay(delay_send);             
+            }
+          break; 
           default  :
               {
               fs_open(&file, "/404.html"); 
@@ -1522,7 +1531,7 @@ post_data_t elem_post_data;
               }
           }
  }
-// char buf_page[3000];
+ char buf_page[3000];
 static void http_server_serve(struct netconn *conn1) 
 {
    
@@ -1553,7 +1562,8 @@ static void http_server_serve(struct netconn *conn1)
   {
     if (netconn_err(conn1) == ERR_OK) 
     {
-     char* buf_page=(char*)pvPortMalloc(3000); 
+  //   char* buf_page=(char*)pvPortMalloc(3000); 
+      memset (buf_page,0,3000); 
       netbuf_data(inbuf, (void**)&buf, &buflen);
       
         if (flag_logon==1)
@@ -1617,29 +1627,33 @@ static void http_server_serve(struct netconn *conn1)
                          
                              if (page_sost==3)
                               {
+                                page_n=5;
                                parser_post(buf,buflen,page_sost);
-                               page_n=5;
+                               
                                vTaskDelay(20);
                                page_html_swich(page_n,conn1,buf_page);
                               }
                              if(page_sost==2)
                                {
+                                 page_n=3;
                                 parser_post(buf,buflen,page_sost);
-                                page_n=3;
+                                
                                 vTaskDelay(20);
                                 page_html_swich(page_n,conn1,buf_page);
                                }
                               if(page_sost==4)
                                {
+                                  page_n=7;
                                 parser_post(buf,buflen,page_sost);
-                                page_n=7;
+                               
                                 vTaskDelay(20);
                                 page_html_swich(page_n,conn1,buf_page);
                                }
                               if(page_sost==5)
                                {
+                                 page_n=8;
                                 parser_post(buf,buflen,page_sost);
-                                page_n=8;
+                                
                                 vTaskDelay(20);
                                 page_html_swich(page_n,conn1,buf_page);
                                }
@@ -1658,6 +1672,7 @@ static void http_server_serve(struct netconn *conn1)
             else
               if ((strncmp((char const *)buf,"GET /index.html",15)==0)||(strncmp((char const *)buf,"GET / HTTP/1.1",14)==0))
              {
+               memset (buf_page,0,3000); 
                page_n=4;
                page_sost=1;
                page_html_swich(page_n,conn1,buf_page);
@@ -1714,7 +1729,7 @@ static void http_server_serve(struct netconn *conn1)
     
      vTaskDelay(4*delay_send);
     
-     vPortFree(buf_page);
+  //   vPortFree(buf_page);
    
     }
      

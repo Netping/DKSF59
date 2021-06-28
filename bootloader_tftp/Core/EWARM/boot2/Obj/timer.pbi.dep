@@ -1,0 +1,5 @@
+timer.pbi: \
+  D:\ika\development\NETPING_PROJECT\59\boot_tftp\boot2\Middlewares\uIP\timer.c \
+  D:\ika\development\NETPING_PROJECT\59\boot_tftp\boot2\Middlewares\uIP/clock.h \
+  D:\ika\development\NETPING_PROJECT\59\boot_tftp\boot2\EWARM\..\Core\Src\clock-arch.h \
+  D:\ika\development\NETPING_PROJECT\59\boot_tftp\boot2\Middlewares\uIP/timer.h

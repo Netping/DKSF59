@@ -84,6 +84,9 @@ static const unsigned char PAGE_HEADER_200_OK[] = {
   //zero
   0x00
 };
+const unsigned char PAGE_HEADER_303_OK[] = 
+"HTTP/1.1 303 See Other\n\r"
+"Location: /index.html\n\r" ;
 static const unsigned char PAGE_HEADER_SERVER[] = {
   //"Server: lwIP/1.3.1 (http://savannah.nongnu.org/projects/lwip)"
   0x53,0x65,0x72,0x76,0x65,0x72,0x3a,0x20,0x6c,0x77,0x49,0x50,0x2f,0x31,0x2e,0x33,
@@ -1355,7 +1358,7 @@ post_data_t elem_post_data;
                 
             }
           break;
-           case 4:
+           case 4: //index 
             {
                vTaskDelay(delay_send);
                len_buf_list=costr_page2_hdr((char*)buf_list);
@@ -1378,6 +1381,9 @@ post_data_t elem_post_data;
                netconn_write(conn, (char*)(buf_list), (size_t)len_buf_list, NETCONN_COPY);
                      
                vTaskDelay(delay_send);
+               
+              
+               
             }
           break;
            case 5: //settings
@@ -1645,6 +1651,17 @@ post_data_t elem_post_data;
 ////              vTaskDelay(delay_send);  
             }
           break;
+            case 12:
+            {  
+           
+               
+               //sprintf(buf_list,"%s%s%s",PAGE_HEADER_303_OK,PAGE_HEADER_SERVER,PAGE_HEADER_CONTENT_TEXT);
+               sprintf(buf_list,"%s%s",PAGE_HEADER_303_OK,PAGE_HEADER_CONTENT_TEXT);
+               len_buf_list = strlen(buf_list);
+               netconn_write(conn, (char*)(buf_list), (size_t)len_buf_list, NETCONN_COPY);                     
+               vTaskDelay(delay_send);
+            }
+          break;
           default  :
               {
               fs_open(&file, "/404.html"); 
@@ -1749,10 +1766,18 @@ static void http_server_serve(struct netconn *conn1)
                     {      
                       if (page_sost==1)
                            {
-                             page_n=4;
                             
-                             parser_post(buf,buflen,page_sost);
-                              page_html_swich(page_n,conn1,buf_page);
+                             
+                           
+//                           page_n=4;
+//                            page_html_swich(page_n,conn1,buf_page); 
+                            
+                              page_n=12;
+                            page_html_swich(page_n,conn1,buf_page);
+                            
+                             parser_post(buf,buflen,page_sost);    
+                             
+                            
                               vTaskDelay(20);
                            }         
                          
@@ -1851,6 +1876,11 @@ static void http_server_serve(struct netconn *conn1)
               else if (strncmp((char const *)buf,"GET /content1.html",18)==0)
             {
               page_n=11;
+              page_html_swich(page_n,conn1,buf_page);
+            }
+             else if (strncmp((char const *)buf,"GET /?output_set=1&out_swich=1",30)==0)
+            {
+              page_n=4;
               page_html_swich(page_n,conn1,buf_page);
             }
             else  

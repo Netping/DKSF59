@@ -20,7 +20,7 @@
         <LeaveTargetRunning>_ 0</LeaveTargetRunning>
     </StLinkDriver>
     <DebugChecksum>
-        <Checksum>80967923</Checksum>
+        <Checksum>1968349823</Checksum>
     </DebugChecksum>
     <Exceptions>
         <StopOnUncaught>_ 0</StopOnUncaught>
@@ -144,12 +144,9 @@
     </DisassembleMode>
     <Breakpoints2>
         <Bp0>_ 0 "EMUL_CODE" "{$PROJ_DIR$\..\..\Middlewares\Third_Party\FreeRTOS\Source\portable\MemMang\heap_3.c}.217.11" 0 0 1 "" 0 "" 0</Bp0>
-        <Bp1>_ 1 "EMUL_CODE" "{$PROJ_DIR$\..\..\Middlewares\Third_Party\FreeRTOS\Source\portable\MemMang\heap_5.c}.265.25" 0 0 1 "" 0 "" 0</Bp1>
-        <Bp2>_ 1 "EMUL_CODE" "{$PROJ_DIR$\..\..\Core\Src\stm32f1xx_it.c}.93.3" 0 0 1 "" 0 "" 0</Bp2>
-        <Bp3>_ 1 "EMUL_CODE" "{$PROJ_DIR$\..\..\Middlewares\Third_Party\LwIP\src\apps\httpd\httpserver-netconn.c}.1743.3" 0 0 1 "" 0 "" 0</Bp3>
-        <Bp4>_ 1 "EMUL_CODE" "{$PROJ_DIR$\..\..\Middlewares\Third_Party\LwIP\src\apps\httpd\httpserver-netconn.c}.1743.3" 0 0 1 "" 0 "" 0</Bp4>
-        <Bp5>_ 1 "EMUL_CODE" "{$PROJ_DIR$\..\..\Middlewares\Third_Party\LwIP\src\apps\httpd\httpserver-netconn.c}.1743.3" 0 0 1 "" 0 "" 0</Bp5>
-        <Count>6</Count>
+        <Bp1>_ 0 "EMUL_CODE" "{$PROJ_DIR$\..\..\Middlewares\Third_Party\FreeRTOS\Source\portable\MemMang\heap_5.c}.265.25" 0 0 1 "" 0 "" 0</Bp1>
+        <Bp2>_ 0 "EMUL_CODE" "{$PROJ_DIR$\..\..\Core\Src\stm32f1xx_it.c}.93.3" 0 0 1 "" 0 "" 0</Bp2>
+        <Count>3</Count>
     </Breakpoints2>
     <Aliases>
         <Count>0</Count>

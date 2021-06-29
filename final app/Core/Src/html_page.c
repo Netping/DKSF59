@@ -24,6 +24,13 @@ static const char http_logs_area[]="<p><textarea name=\"comment\" align=\"center
 static const char http_logs_end[] ="</textarea></p>  </center>";
 static const char http_html_hdr[] = "HTTP/1.1 200 OK\r\nContent-type: text/html\r\n\r\n";
 
+//const unsigned char PAGE_HEADER_303_OK[] = {
+//  //"HTTP/1.1 200 OK"
+//  0x48,0x54,0x54,0x50,0x2f,0x31,0x2e,0x30,0x20,0x33,0x30,0x33,0x20,0x4f,0x4b,0x0d,
+//  0x0a,
+//  //zero
+//  0x00
+//};
 
 const char http_html_200[] = {
 /* /404.html (10 chars) */
@@ -1573,6 +1580,8 @@ uint32_t costr_page2_hdr(char* str1)
   uint32_t len;
   
    memset (str1,0, sizeof(str1)); 
+   
+ 
    strcat(str1,http_html_start_constr_dy);
   len=strlen(str1);
   

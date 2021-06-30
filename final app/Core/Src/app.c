@@ -337,7 +337,7 @@ void LED_task(void const * argument)
 
 void logs_task(void const * argument)
 {
-  osDelay(5000);
+  //osDelay(5000);
   form_reple_to_save(POWER_ON);
   GET_reple(0,&start_time);
   for(;;)

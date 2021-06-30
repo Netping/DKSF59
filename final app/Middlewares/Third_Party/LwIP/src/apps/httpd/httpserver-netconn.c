@@ -1586,13 +1586,15 @@ post_data_t elem_post_data;
               signed char time_run[6]={0};  
               uint8_t ct_time;
               GET_reple(0,&real_time);  
-              time_run[0]=real_time.year-start_time.year;
-              time_run[1]=real_time.month-start_time.month;
-              time_run[2]=real_time.day-start_time.day;
-              time_run[3]=real_time.reple_hours-start_time.reple_hours;
-              time_run[4]=real_time.reple_minuts-start_time.reple_minuts;
-              time_run[5]=real_time.reple_seconds-start_time.reple_seconds;
-              ct_time=1;
+              if(start_time.year!=2020)
+               {
+                time_run[0]=real_time.year-start_time.year;
+                time_run[1]=real_time.month-start_time.month;
+                time_run[2]=real_time.day-start_time.day;
+                time_run[3]=real_time.reple_hours-start_time.reple_hours;
+                time_run[4]=real_time.reple_minuts-start_time.reple_minuts;
+                time_run[5]=real_time.reple_seconds-start_time.reple_seconds;
+                  ct_time=1;
               if (time_run[ct_time]<0)
                {
                 time_run[ct_time-1]--;
@@ -1624,6 +1626,24 @@ post_data_t elem_post_data;
               }
           //   sprintf(buf_list,"%s%s%s    %dг.  %dм. %dд. %dч. %dм. %dс.    %d- %d",PAGE_HEADER_200_OK,PAGE_HEADER_SERVER,PAGE_HEADER_CONTENT_TEXT,time_run[0],time_run[1],time_run[2],time_run[3],time_run[4],time_run[5],xFreeBytesRemaining,xMinimumEverFreeBytesRemaining);
               sprintf(buf_list,"%s%s%s    %dг.  %dм. %dд. %dч. %dм. %dс.    ",PAGE_HEADER_200_OK,PAGE_HEADER_SERVER,PAGE_HEADER_CONTENT_TEXT,time_run[0],time_run[1],time_run[2],time_run[3],time_run[4],time_run[5]);
+               }
+              else
+               {
+                  time_run[0]=0;
+                  time_run[1]=0;
+                  time_run[2]=0;
+                  time_run[3]=0;
+                  time_run[4]=0;
+                  time_run[5]=0;
+                  start_time.year=real_time.year;
+                  start_time.month=real_time.month;
+                  start_time.day=real_time.day;
+                  start_time.reple_hours=real_time.reple_hours;
+                  start_time.reple_minuts=real_time.reple_minuts;
+                  start_time.reple_seconds=real_time.reple_seconds;
+                  sprintf(buf_list,"Время не установлено!",PAGE_HEADER_200_OK,PAGE_HEADER_SERVER,PAGE_HEADER_CONTENT_TEXT);
+               }
+            
               len_buf_list = strlen(buf_list);
               netconn_write(conn, (char*)(buf_list), (size_t)len_buf_list, NETCONN_COPY);      
               vTaskDelay(delay_send);             

@@ -141,10 +141,10 @@
 #define A_LOGIN_SMTP A_PORT_SNMP+2
 #define A_PASSWORD_SMTP A_LOGIN_SMTP+16
 #define A_GEOM_NAME A_PASSWORD_SMTP+16  
-#define A_ID_MAC A_GEOM_NAME+32        
+#define A_ID_MAC A_GEOM_NAME+86        
 #define A_NAME_DEV A_ID_MAC+8
-#define A_CALL_DATA A_NAME_DEV+16
-#define A_IP_SNMP A_CALL_DATA+16
+#define A_CALL_DATA A_NAME_DEV+86
+#define A_IP_SNMP A_CALL_DATA+86
 #define A_NTP_CIRCL A_IP_SNMP+4 
 #define A_TYPE_OUT A_NTP_CIRCL+1
 #define A_RESV V_TYPE_OUT+1
@@ -354,6 +354,10 @@ uint32_t FLASH_If_Write(uint32_t destination, uint32_t *p_source, uint32_t lengt
 uint32_t FLASH_If_WriteProtectionConfig(uint32_t protectionstate);
 extern uint8_t flag_app_start;
 extern   uint32_t timer_to_app;
+extern uint32_t timer_start_app;
+extern uint32_t flag_start_wait;
+extern uint8_t step_boot ;
+extern uint32_t ct_led_timer;
 //extern CRC_HandleTypeDef crc_hcrc;
 typedef struct 
 {
@@ -499,10 +503,10 @@ char V_LOGIN_SMTP[32];
 ////#define A_LOGIN_SNMP 0x800411D
 char V_PASSWORD_SMTP[32];
 ////#define A_PASSWORD_SNMP 0x800412B
-char V_GEOM_NAME[32];
+char V_GEOM_NAME[86];
 uint8_t V_ID_MAC[8];
-char V_Name_dev[16];
-char V_CALL_DATA[16];
+char V_Name_dev[86];
+char V_CALL_DATA[86];
 uint8_t V_IP_SNMP[4];
 signed char V_NTP_CIRCL;
 uint8_t V_TYPE_OUT;
@@ -564,6 +568,7 @@ typedef  void (*pFunction)(void);
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
 uint8_t frame_in_to_flash(uint8_t* data, uint8_t* nframe, uint16_t len_frame);
 void jamp_to_app (void);
+void load_def_data (void);
 uint8_t load_struct_flash_data (void);
 uint8_t save_data_blok (uint8_t N_sector,uint32_t* struct_to);
 void Save_CRC_APP (void);

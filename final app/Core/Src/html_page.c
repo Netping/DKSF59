@@ -113,7 +113,7 @@ static const char http_html_start_constr_dy[] =
           "<head>\n\r"
           "<title>NetPing</title>\n\r"
           "<a href=\"http:\/\/www.netping.ru/\"><img src=\"img/netping.gif\" height=\"59\" width=\"169\" border=\"0\" alt=\"netping logo\" title=\"200 OK\"></a>\n\r"
-          "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\" />"
+          "<meta http-equiv=\"Content-Type\" content=\"text/html\" charset=\"utf-8\" />"
           "\n\r\<script\>\n\r"
 	  "var xhr,xhr1\;\n\r "
          
@@ -146,7 +146,7 @@ static const char http_html_start_constr_dy[] =
 "</script>"
 ;
 
-static const char http_html_start_constr[] = "\<!DOCTYPE html> <body /*onload=\"onload()\"*/\>  <a href=\"http:\/\/www.netping.ru/\"><img src=\"img/netping.gif\" height=\"59\" width=\"169\" border=\"0\" alt=\"netping logo\" title=\"200 OK\"></a> <html><head><meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\" />"
+static const char http_html_start_constr[] = "\<!DOCTYPE html> <body /*onload=\"onload()\"*/\>  <a href=\"http:\/\/www.netping.ru/\"><img src=\"img/netping.gif\" height=\"59\" width=\"169\" border=\"0\" alt=\"netping logo\" title=\"200 OK\"></a> <html><head><meta http-equiv=\"Content-Type\" content=\"text/html\" charset=\"utf-8\" />"
 //         "\<script\>"
 //	  "var xhr\;"
 //           "var idTimer1\";"
@@ -492,7 +492,7 @@ uint16_t set_text_area  (char* str1,char* name, uint8_t n,uint8_t c, uint8_t r,u
 }
 uint16_t set_text_input (char* str1,char* name, uint8_t n,uint8_t* dat)
 { 
- sprintf(str1,"<input size=\"%d\" name=\"%s\"  value=\"%s\" maxlength=\"%d\" >",n,name,dat,n);
+ sprintf(str1,"<input size=\"%d\" name=\"%s\" formenctype=\"text/plain\" value=\"%s\" maxlength=\"%d\" >",n,name,dat,n);
  return 0;
 }
 uint16_t set_text_input_PW (char* str1,char* name, uint8_t n,uint8_t* dat)
@@ -1729,15 +1729,15 @@ uint32_t costr_page3(char* str1)
  
    
      
-   set_text_input(str3,"name_dev",16,FW_data.V_Name_dev);  
+   set_text_input(str3,"name_dev",15,FW_data.V_Name_dev);  
    set_table_string(str2,"Имя устройства",str3);
    strcat(str1,str2);
    
-   set_text_input(str3,"geo_place",16,FW_data.V_GEOM_NAME);  
+   set_text_input(str3,"geo_place",15,FW_data.V_GEOM_NAME);  
    set_table_string(str2,"Место установки устройства",str3);  
    strcat(str1,str2);
    
-   set_text_input(str3,"call_data",16,FW_data.V_CALL_DATA);  
+   set_text_input(str3,"call_data",15,FW_data.V_CALL_DATA);  
    set_table_string(str2,"Контактные данные",str3);  
    strcat(str1,str2);
    

@@ -19,13 +19,16 @@ uint16_t ct_dns_time=0;
 uint8_t status_dns=0;
 V_D_TIME_type slot_day,slot_repars[10];
 uint8_t flag_err_dates=0;
+uint8_t flag_runtime_out[1]=0;
+uint8_t HTTP_pulse_time=0;
 IWDG_HandleTypeDef  iwdt_hdr;
 
-
+ 
 
 
 void set_relay(uint8_t sost)
 {
+ flag_runtime_out[1]=sost;
  if (sost==0)
   {
     HAL_GPIO_WritePin(RELAY_INT_A1_GPIO_Port,RELAY_INT_A1_Pin,GPIO_PIN_RESET);
@@ -88,45 +91,65 @@ void StartDefaultTask(void const * argument)
       }
   }
 }
-void set_out_port(uint8_t sost,uint8_t canal)
+void set_out_port(uint8_t sost,uint8_t canal,uint8_t time)
 {
+   uint32_t OID_out[]={1,2020,1,0};
+
   if (canal==1)
    {
     if (sost==0)
      {
-      if ((FW_data.V_TYPE_OUT==0)||(FW_data.V_TYPE_OUT==2))
+      if (((FW_data.V_TYPE_OUT==0)||(FW_data.V_TYPE_OUT==2))&&flag_runtime_out[1]!=0)
        {
+         send_mess_trap(OID_out,FW_data.V_OFF_MESS,strlen(FW_data.V_OFF_MESS));
+        
         set_relay(0);
        }
-      if ((FW_data.V_TYPE_OUT==1)||(FW_data.V_TYPE_OUT==3))
+      if (((FW_data.V_TYPE_OUT==1)||(FW_data.V_TYPE_OUT==3))&&flag_runtime_out[1]!=1)
        {
+         send_mess_trap(OID_out,FW_data.V_ON_MESS,strlen(FW_data.V_ON_MESS));
+        
         set_relay(1);
        }    
      }
     if (sost==1)
      {
-      if ((FW_data.V_TYPE_OUT==0)||(FW_data.V_TYPE_OUT==2))
+        OID_out[3]=2;
+      if (((FW_data.V_TYPE_OUT==0)||(FW_data.V_TYPE_OUT==2))&&flag_runtime_out[1]!=1)
        {
+         send_mess_trap(OID_out,FW_data.V_ON_MESS,strlen(FW_data.V_ON_MESS));
+         
         set_relay(1);
        }
-      if ((FW_data.V_TYPE_OUT==1)||(FW_data.V_TYPE_OUT==3))
+      if (((FW_data.V_TYPE_OUT==1)||(FW_data.V_TYPE_OUT==3))&&flag_runtime_out[1]!=0)
        {
+         send_mess_trap(OID_out,FW_data.V_OFF_MESS,strlen((const char*)FW_data.V_OFF_MESS));
+         
         set_relay(0);
        }    
      }  
     if (sost>1)
      {
-       if ((FW_data.V_TYPE_OUT==0)||(FW_data.V_TYPE_OUT==2))
+        OID_out[3]=3;
+       if (((FW_data.V_TYPE_OUT==0)||(FW_data.V_TYPE_OUT==2))&&flag_runtime_out[1]!=0)
         {
          set_relay(0);
-         osDelay(1000*FW_data.V_TIME_RESET_PULSE);
+        
+          send_mess_trap(OID_out,FW_data.V_ON_MESS,strlen(FW_data.V_ON_MESS));
+         osDelay(1000*time);
+          send_mess_trap(OID_out,FW_data.V_OFF_MESS,strlen(FW_data.V_OFF_MESS));
+         
          set_relay(1);
         }    
-       if ((FW_data.V_TYPE_OUT==1)||(FW_data.V_TYPE_OUT==3))
+       if (((FW_data.V_TYPE_OUT==1)||(FW_data.V_TYPE_OUT==3))&&flag_runtime_out[1]!=1)
         {
           set_relay(1);
-          osDelay(1000*FW_data.V_TIME_RESET_PULSE);
+         
+           send_mess_trap(OID_out,FW_data.V_OFF_MESS,strlen(FW_data.V_OFF_MESS));
+          osDelay(1000*time);
+           send_mess_trap(OID_out,FW_data.V_ON_MESS,strlen(FW_data.V_ON_MESS));
           set_relay(0);
+         
         }    
      }
   }  
@@ -135,32 +158,67 @@ void set_out_port(uint8_t sost,uint8_t canal)
 
 void IO_CNRL_APP(void const * argument)
 {
- uint32_t OID_out[]={1,2020,1,0};
+// uint32_t OID_out[]={1,2020,1,0};
+   
  uint16_t data=0;
+ data= HAL_RTCEx_BKUPRead(&hrtc,1);
+ if((data==0)||(data==2))
+ {
+   set_relay(0);
+ }
+ else
+ {
+   set_relay(1);
+ }
  for(;;)
  {
   if ((flag_global_swich_out==SWICH_ON_WEB)||(flag_global_swich_out==SWICH_OFF_WEB)||(flag_global_swich_out==SWICH_TOLG_WEB)||(flag_global_swich_out==SWICH_ON_RASP)||(flag_global_swich_out==SWICH_OFF_RASP)||
-     (flag_global_swich_out==SWICH_ON_SNMP)||(flag_global_swich_out==SWICH_OFF_SNMP)||(flag_global_swich_out==SWICH_TOLG_SNMP)||(flag_global_swich_out==SWICH_TOLG_WATCH))
+     (flag_global_swich_out==SWICH_ON_SNMP)||(flag_global_swich_out==SWICH_OFF_SNMP)||(flag_global_swich_out==SWICH_TOLG_SNMP)||
+       (flag_global_swich_out==SWICH_TOLG_WATCH)||(flag_global_swich_out==SWICH_ON_HTTP)||(flag_global_swich_out==SWICH_OFF_HTTP))
    {
     data= HAL_RTCEx_BKUPRead(&hrtc,1);
     if(data==0)
      {
-      send_mess_trap(OID_out,FW_data.V_ON_MESS,strlen(FW_data.V_ON_MESS));
-      set_out_port(data,1);
+      //send_mess_trap(OID_out,FW_data.V_ON_MESS,strlen(FW_data.V_ON_MESS));
+      set_out_port(data,1,0);
       flag_global_swich_out=0;
      }
     if(data==1)
      {
-      OID_out[3]=2;
-      send_mess_trap(OID_out,FW_data.V_ON_MESS,strlen(FW_data.V_ON_MESS));
-      set_out_port(data,1);
+     // OID_out[3]=2;
+      //send_mess_trap(OID_out,FW_data.V_ON_MESS,strlen(FW_data.V_OFF_MESS));
+      set_out_port(data,1,0);
       flag_global_swich_out=0;
      }
     if (data>1)
      {
-      OID_out[3]=3;
-      send_mess_trap(OID_out,FW_data.V_ON_MESS,strlen(FW_data.V_ON_MESS));
-      set_out_port(2,1); 
+     // OID_out[3]=3;
+      //send_mess_trap(OID_out,FW_data.V_ON_MESS,strlen(FW_data.V_ON_MESS));
+      set_out_port(2,1,FW_data.V_TIME_RESET_PULSE); 
+      flag_global_swich_out=0;
+     }
+   }
+   if ((flag_global_swich_out==SWICH_TOLG_HTTP))
+   {
+    data= HAL_RTCEx_BKUPRead(&hrtc,1);
+    if(data==0)
+     {
+      //send_mess_trap(OID_out,FW_data.V_ON_MESS,strlen(FW_data.V_ON_MESS));
+      set_out_port(data,1,0);
+      flag_global_swich_out=0;
+     }
+    if(data==1)
+     {
+     // OID_out[3]=2;
+      //send_mess_trap(OID_out,FW_data.V_ON_MESS,strlen(FW_data.V_OFF_MESS));
+      set_out_port(data,1,0);
+      flag_global_swich_out=0;
+     }
+    if (data>1)
+     {
+     // OID_out[3]=3;
+      //send_mess_trap(OID_out,FW_data.V_ON_MESS,strlen(FW_data.V_ON_MESS));
+      set_out_port(2,1,HTTP_pulse_time); 
       flag_global_swich_out=0;
      }
    }
@@ -338,8 +396,18 @@ void LED_task(void const * argument)
 void logs_task(void const * argument)
 {
   //osDelay(5000);
-  form_reple_to_save(POWER_ON);
-  GET_reple(0,&start_time);
+ 
+   GET_reple(0,&start_time);
+  FW_data.V_CT_RES_ALLSTART=0;
+   if (HAL_RTCEx_BKUPRead(&hrtc,3)==0)
+    {
+     form_reple_to_save(POWER_ON);
+    
+    } 
+    if (HAL_RTCEx_BKUPRead(&hrtc,3)!=0)
+    {
+      HAL_RTCEx_BKUPWrite(&hrtc,3,0);
+    }
   for(;;)
    {
     if (flag_my_smtp_test==1)
@@ -349,16 +417,18 @@ void logs_task(void const * argument)
      }
     if (flag_global_save_log==1)
      {
-      memset (mess_smtp,0,128);       
+      memset (mess_smtp,0,256);       
       save_reple_log(reple_to_save);
       decode_reple(mess_smtp, &reple_to_save);  
       send_smtp_mess(mess_smtp);
       flag_global_save_log=0;
+      
      }
     if ((flag_global_save_data==1)&&(flag_global_save_log==0))
      {
       save_data_flash();
-      flag_global_save_data=0;
+      flag_global_save_data=0;      
+//      flag_global_reset_mode=1;
      }
     if ((flag_global_load_def==1)&&(flag_global_save_log==0))
      {
@@ -371,18 +441,21 @@ void logs_task(void const * argument)
       jamp_to_boot();
       flag_global_boot_mode=0;
      }
-     if ((flag_global_reset_mode==1)&&(flag_global_save_log==0))
-     {
-      vTaskDelay(1000);
-      jamp_to_app();
-      flag_global_reset_mode=0;
-     }
+//     if ((flag_global_reset_mode==1)&&(flag_global_save_log==0))
+//     {
+//        flag_global_reset_mode=0;
+//      vTaskDelay(5000);
+//      
+//      HAL_RTCEx_BKUPWrite(&hrtc,3,1);
+//      jamp_to_app();
+//     
+//     }
     osDelay(100);
   }
 }
 void iwdt_task(void const * argument)
 {
-  #if (IWDT_EN) 
+  #if (IWDT_EN==1) 
    __HAL_RCC_LSI_ENABLE();
    iwdt_hdr.Instance=IWDG;
    iwdt_hdr.Init.Prescaler=255;
@@ -391,7 +464,7 @@ void iwdt_task(void const * argument)
   #endif
  while(1)
   {
-   #if (IWDT_EN) 
+   #if (IWDT_EN==1) 
     HAL_IWDG_Refresh(&iwdt_hdr);
    #endif
    vTaskDelay(200);
@@ -447,9 +520,15 @@ void rasp_task(void const * argument)
       memcpy(&(slot_day),&(slot_repars[dates.WeekDay-1]),sizeof(slot_day));
       for (ct_podm=0;ct_podm<10;ct_podm++)
        {
-        if ((dates.Date==FW_data.V_RD_DATA.data[ct_podm].day)&&(dates.Month==FW_data.V_RD_DATA.data[ct_podm].month)&&(dates.Year==FW_data.V_RD_DATA.data[ct_podm].year))
+        if ((dates.Date==FW_data.V_RD_DATA.data[ct_podm].day+1)&&(dates.Month==FW_data.V_RD_DATA.data[ct_podm].month+1)&&(dates.Year==FW_data.V_RD_DATA.data[ct_podm].year))
          {
-          memcpy(slot_day,slot_repars[FW_data.V_RD_DATA.restore_day[ct_podm]],sizeof(slot_day));
+//           uint16_t ct_byte=0;
+//           for(ct_byte=0;ct_byte<strlen(slot_day);ct_byte)
+//            {
+//              (uint8_t)*(slot_day)=(uint8_t)*(slot_repars[FW_data.V_RD_DATA.restore_day[ct_podm]]);
+//            }
+                     memcpy(&(slot_day),&(slot_repars[FW_data.V_RD_DATA.restore_day[ct_podm]-1]),sizeof(slot_day));
+           
          }
        }  
       for (ct_slots=0;ct_slots<6;ct_slots++)
@@ -459,23 +538,44 @@ void rasp_task(void const * argument)
           flag_set_out_fasp=1;
           if (flag_err_dates==0)
            {
+            if (flag_runtime_out[1]==0)
+            { 
             form_reple_to_save(SWICH_ON_RASP);
             flag_global_swich_out=SWICH_ON_RASP;
             HAL_RTCEx_BKUPWrite(&hrtc,1,0);
+            }
+            else
+            {
+              form_reple_to_save(SWICH_ON_RASP_N);
+            }
            }
           else
            {
             if (FW_data.V_SOST_ERR_RASP==1)
              {
-              form_reple_to_save(SWICH_ON_RASP);
-              flag_global_swich_out=SWICH_ON_RASP;
-              HAL_RTCEx_BKUPWrite(&hrtc,1,0);
+              if (flag_runtime_out[1]==0)
+               { 
+               form_reple_to_save(SWICH_ON_RASP);
+               flag_global_swich_out=SWICH_ON_RASP;
+               HAL_RTCEx_BKUPWrite(&hrtc,1,0);
+               }
+              else
+                {
+                 form_reple_to_save(SWICH_ON_RASP_N);
+                }
              }
             if (FW_data.V_SOST_ERR_RASP==2)
              {
-              form_reple_to_save(SWICH_OFF_RASP);
-              flag_global_swich_out=SWICH_OFF_RASP;
-              HAL_RTCEx_BKUPWrite(&hrtc,1,1);                      
+              if (flag_runtime_out[1]==1)
+               {  
+                form_reple_to_save(SWICH_OFF_RASP);
+                flag_global_swich_out=SWICH_OFF_RASP;
+                HAL_RTCEx_BKUPWrite(&hrtc,1,1);                      
+               } 
+              else
+                {
+                 form_reple_to_save(SWICH_OFF_RASP_N);
+                }
              }
            }
          }
@@ -484,23 +584,44 @@ void rasp_task(void const * argument)
           flag_set_out_fasp=1;
           if (flag_err_dates==0)
            {
-            form_reple_to_save(SWICH_OFF_RASP);
-            flag_global_swich_out=SWICH_OFF_RASP;
-            HAL_RTCEx_BKUPWrite(&hrtc,1,1);
+             if (flag_runtime_out[1]==1)
+               { 
+                form_reple_to_save(SWICH_OFF_RASP);
+                flag_global_swich_out=SWICH_OFF_RASP;
+                HAL_RTCEx_BKUPWrite(&hrtc,1,1);
+               }
+             else
+              {
+               form_reple_to_save(SWICH_OFF_RASP_N);
+              }
            }
             else
            {
             if (FW_data.V_SOST_ERR_RASP==1)
              {
-              form_reple_to_save(SWICH_ON_RASP);
-              flag_global_swich_out=SWICH_ON_RASP;
-              HAL_RTCEx_BKUPWrite(&hrtc,1,0);
+              if (flag_runtime_out[1]==0)
+               {  
+                form_reple_to_save(SWICH_ON_RASP);
+                flag_global_swich_out=SWICH_ON_RASP;
+                HAL_RTCEx_BKUPWrite(&hrtc,1,0);
+               }
+              else
+               {
+                form_reple_to_save(SWICH_ON_RASP_N);
+               }
              }
             if (FW_data.V_SOST_ERR_RASP==2)
              {
-              form_reple_to_save(SWICH_OFF_RASP);
-              flag_global_swich_out=SWICH_OFF_RASP;
-              HAL_RTCEx_BKUPWrite(&hrtc,1,1);                      
+               if (flag_runtime_out[1]==1)
+               { 
+                form_reple_to_save(SWICH_OFF_RASP);
+                flag_global_swich_out=SWICH_OFF_RASP;
+                HAL_RTCEx_BKUPWrite(&hrtc,1,1);                      
+               }
+               else
+               {
+                form_reple_to_save(SWICH_OFF_RASP_N);
+               }
              }
            }
          }

@@ -115,7 +115,12 @@ httpserver-netconn.pbi: \
   D:\ika\development\NETPING_PROJECT\59\smart-switch\IAR\EWARM/../../Core/Inc\base64.h \
   D:\ika\development\NETPING_PROJECT\59\smart-switch\IAR\EWARM/../../Core/Inc\LOGS.h \
   D:\ika\development\NETPING_PROJECT\59\smart-switch\IAR\EWARM/../../Core/Inc/flash_if.h \
-  D:\ika\development\NETPING_PROJECT\59\smart-switch\IAR\EWARM/../../Core/Inc\smtp.h \
+  D:\ika\development\NETPING_PROJECT\59\smart-switch\IAR\EWARM/../../Core/Inc\app.h \
+  D:\ika\development\NETPING_PROJECT\59\smart-switch\IAR\EWARM/../../Middlewares/Third_Party/LwIP/src/include/lwip\dns.h \
   D:\ika\development\NETPING_PROJECT\59\smart-switch\IAR\EWARM/../../Core/Inc/LOGS.h \
+  D:\ika\development\NETPING_PROJECT\59\smart-switch\IAR\EWARM/../../Core/Inc/html_page.h \
+  D:\ika\development\NETPING_PROJECT\59\smart-switch\IAR\EWARM\..\..\Middlewares\Third_Party\LwIP\src\apps\ping\ping.h \
+  D:\ika\development\NETPING_PROJECT\59\smart-switch\IAR\EWARM/../../Core/Inc/hard_config.h \
+  D:\ika\development\NETPING_PROJECT\59\smart-switch\IAR\EWARM/../../Core/Inc\smtp.h \
   D:\ika\development\NETPING_PROJECT\59\smart-switch\IAR\EWARM\..\..\Middlewares\Third_Party\FreeRTOS\Source\portable\MemMang\heap_5.h \
   D:\ika\development\NETPING_PROJECT\59\smart-switch\IAR\EWARM/../../Core/Inc\utf8_code.h

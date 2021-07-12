@@ -542,7 +542,7 @@ char V_EMAIL_CC2[32];
 char V_EMAIL_CC3[32];
 
 
-uint8_t V_resv[1167];
+uint8_t V_resv[956];
 
 ////#define A_RESV 0x800413B
 logs_t V_logs_struct;

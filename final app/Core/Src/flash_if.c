@@ -562,7 +562,7 @@ uint8_t load_def_data(void)
 
      
      
-     
+      memset((uint8_t*)&FW_data.V_GEOM_NAME,0,85);
      memcpy((uint32_t*)&FW_data.V_GEOM_NAME, (uint32_t *)"Moscow office", 13);    
      
     FW_data.V_ID_MAC[0] =   00;//(uint16_t)idBase0[0];
@@ -573,6 +573,8 @@ uint8_t load_def_data(void)
     FW_data.V_ID_MAC[5] =   ((uint16_t)idBase2[0])>>8;
     FW_data.V_ID_MAC[6] =    0x59;
     FW_data.V_ID_MAC[7] =    0xDC;
+    memset((uint8_t*)&FW_data.V_Name_dev,0,85);
+    memset((uint8_t*)&FW_data.V_CALL_DATA,0,85);
     memcpy((uint8_t*)&FW_data.V_Name_dev,(uint8_t *)"DKSF 59",7);    
     memcpy((uint8_t*)&FW_data.V_CALL_DATA,(uint8_t *)"netping.ru",10);   
     
@@ -637,9 +639,9 @@ uint16_t crc_in=((uint16_t)(*(uint32_t*)A_CRC_DATA));
       
    if (((crc_in!= crc16_ccitt((uint8_t *)&(*(uint32_t*)A_DHCP),2018))||(crc_in==0)) )
    {
-     HAL_GPIO_WritePin (LED_RED_GPIO_Port, LED_RED_Pin,0);
-     while (HAL_GPIO_ReadPin(IN_SWICH_GPIO_Port,IN_SWICH_Pin)==0){}
-     HAL_GPIO_WritePin (LED_RED_GPIO_Port, LED_RED_Pin,0);
+//     HAL_GPIO_WritePin (LED_RED_GPIO_Port, LED_RED_Pin,0);
+//     while (HAL_GPIO_ReadPin(IN_SWICH_GPIO_Port,IN_SWICH_Pin)==0){}
+//     HAL_GPIO_WritePin (LED_RED_GPIO_Port, LED_RED_Pin,0);
      return  load_def_data();
    
   }

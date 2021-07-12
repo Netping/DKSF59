@@ -20,7 +20,7 @@ void StartDefaultTask(void const * argument);
 void LED_task(void const * argument);
 void logs_task(void const * argument);
 void IO_CNRL_APP(void const * argument);
-void set_out_port(uint8_t sost,uint8_t canal);
+void set_out_port(uint8_t sost,uint8_t canal,uint8_t time);
 void rasp_task(void const * argument);
 void iwdt_task(void const * argument);
 
@@ -34,3 +34,5 @@ extern IWDG_HandleTypeDef  iwdt_hdr;
 extern uint8_t flag_err_dates;
 extern uint8_t flag_set_ip;
 extern char mess_smtp[256]; 
+extern uint8_t flag_runtime_out[1];
+extern uint8_t HTTP_pulse_time;

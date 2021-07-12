@@ -81,7 +81,7 @@
 //#define MEMP_USE_CUSTOM_POOLS           1
 #define PBUF_POOL_SIZE                  6
 
-
+#define configUSE_TRACE_FACILITY 1
 
 ///*----- Default Value for MEMP_NUM_TCP_PCB: 5 ---*/
 ////#define MEMP_NUM_TCP_PCB 3

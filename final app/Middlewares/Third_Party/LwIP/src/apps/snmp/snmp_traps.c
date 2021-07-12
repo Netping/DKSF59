@@ -154,7 +154,7 @@ snmp_get_auth_traps_enabled(void)
  * @param eoid points to enterprise object identifier
  * @param generic_trap is the trap code
  * @param specific_trap used for enterprise traps when generic_trap == 6
- * @param varbinds linked list of varbinds to be sent
+ * @param varbinds linked list of varbinds to be sentc
  * @return ERR_OK when success, ERR_MEM if we're out of memory
  *
  * @note the use of the enterprise identifier field
@@ -211,7 +211,7 @@ snmp_send_trap(const struct snmp_obj_id* eoid, s32_t generic_trap, s32_t specifi
           snmp_stats.outpkts++;
 
           /** send to the TRAP destination */
-          snmp_sendto(snmp_traps_handle, p, &td->dip, FW_data.V_PORT_SNMP);
+          snmp_sendto(snmp_traps_handle, p, &td->dip,SNMP_TRAP_PORT);
           pbuf_free(p);
         } else {
           err = ERR_MEM;
